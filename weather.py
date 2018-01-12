@@ -3,19 +3,37 @@
 import json
 import os
 import sqlite3
-import datetime
+# import datetime
 
 
-def pars(filename):
+def addrecord(filename):
+    s = []
+    k = []
     with open(filename, 'r', encoding='utf-8') as file:
-        with sqlite3.connect('weather.db') as conn:
+        with sqlite3.connect('weather.db') as con:
+            cur = con.cursor()
+            cur.execute('''
+                create table if not exists towns (
+                    id integer primary key not null unique,
+                    name text not null,
+                    country text
+                    )
+            ''')
             for d in json.load(file):
-                for key, value in d.items():
+                for value in d.values():
                     if type(value) != dict:
-                        print(key, value)
-                        sql = 'insert into towns ({}) values ({})'.format(key, value)
-                        conn.execute(sql)
+                        s.append(value)
+                    else:
+                        k.append(tuple(s))
+                        s = []
+                if len(k) == 2:
+                    # print(len(k))
+                    # print(tuple(k))
+                    con.executemany('insert into towns values(?, ?, ?)', (tuple(k)))
+                    k = []
+            con.executemany('insert into towns values(?, ?, ?)', (tuple(k)))
+            # print(tuple(k))
 
 
 fname = 'city_list_test.json'
-pars(os.path.join(os.getcwd(), fname))
+addrecord(os.path.join(os.getcwd(), fname))
