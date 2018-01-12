@@ -26,14 +26,11 @@ def addrecord(filename):
                     else:
                         k.append(tuple(s))
                         s = []
-                if len(k) == 2:
-                    # print(len(k))
-                    # print(tuple(k))
+                if len(k) == 50:
                     con.executemany('insert into towns values(?, ?, ?)', (tuple(k)))
                     k = []
             con.executemany('insert into towns values(?, ?, ?)', (tuple(k)))
-            # print(tuple(k))
 
 
-fname = 'city_list_test.json'
+fname = 'city.list.json'
 addrecord(os.path.join(os.getcwd(), fname))
