@@ -32,5 +32,6 @@ def addrecord(filename):
             con.executemany('insert into towns values(?, ?, ?)', (tuple(k)))
 
 
-fname = 'city.list.json'
-addrecord(os.path.join(os.getcwd(), fname))
+if __name__ == '__main__':
+    fname = 'city.list.json'
+    addrecord(os.path.join(os.getcwd(), fname))
