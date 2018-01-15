@@ -1,35 +1,38 @@
 # -*- coding: utf-8 -*-
 
-import json
+# import json
 # import os
-# import sqlite3
+import sqlite3
 # import datetime
-# import requests
+import requests
 
-# with open('app.id', 'r', encoding='utf-8') as file:
-#     appid = file.read()
-#
-# town = 'Lutsk'
-# with sqlite3.connect('weather.db') as con:
-#     cur = con.cursor()
-#     cur.execute('''
-#         create table if not exists weather (
-#             id integer not null primary key autoincrement unique,
-#             townid integer not null unique,
-#             wdescript text,
-#             temp real,
-#             wspeed real,
-#             wdeg real,
-#             dt integer
-#         )
-#     ''')
-    # for row in cur.execute('select id, name from towns where name=\'{}\''.format(town)):
-        # url = ('''http://api.openweathermap.org/data/2.5/weather?id={}&lang=ua&units=metric&appid={}
-        #     '''.format(row[0], appid))
-        # print(requests.get(url).json())
+with open('app.id', 'r', encoding='utf-8') as file:
+    appid = file.read()
+
 base = []
-with open('weather.json', 'r', encoding='utf-8') as jfile:
-    for datakey, datavalue in json.load(jfile).items():
+town = 'Lutsk'
+with sqlite3.connect('weather.db') as con:
+    cur = con.cursor()
+    cur.execute('''
+        create table if not exists weather (
+            id integer not null primary key autoincrement unique,
+            townid integer not null unique,
+            wdescript text,
+            temp real,
+            wspeed real,
+            wdeg real,
+            dt integer
+        )
+    ''')
+    for row in cur.execute('select id, name from towns where name=\'{}\''.format(town)):
+        url = ('''
+            http://api.openweathermap.org/data/2.5/weather?id={}&lang=ua&units=metric&appid={}
+            '''.format(row[0], appid))
+        # print(requests.get(url).json())
+
+# with open('weather.json', 'r', encoding='utf-8') as jfile:
+#     for datakey, datavalue in json.load(jfile).items():
+    for datakey, datavalue in requests.get(url).json().items():
         if datakey == 'weather':
             for k, v in datavalue[0].items():
                 if k == 'description':
