@@ -7,40 +7,45 @@ import sqlite3
 import requests
 
 with open('app.id', 'r', encoding='utf-8') as file:
-    appid = file.read()
+    app_id = file.read().strip()
 
 base = []
-town = 'Lutsk'
+townid = []
+elements = []
+country = 'UA'
 with sqlite3.connect('weather.db') as con:
     cur = con.cursor()
     cur.execute('''
         create table if not exists weather (
             id integer not null primary key autoincrement unique,
-            townid integer not null unique,
             wdescript text,
             temp real,
             wspeed real,
             wdeg real,
-            dt integer
+            dt integer,
+            townid integer not null unique
         )
     ''')
-    for row in cur.execute('select id, name from towns where name=\'{}\''.format(town)):
-        url = ('''
-            http://api.openweathermap.org/data/2.5/weather?id={}&lang=ua&units=metric&appid={}
-            '''.format(row[0], appid))
-        # print(requests.get(url).json())
+    for row in cur.execute('select id from towns where country=\'{}\' limit 20'.format(country)):
+        townid.append(str(*row))
+    url = 'http://api.openweathermap.org/data/2.5/group?id={}&lang=ru&units=metric&appid={}'\
+        .format(','.join(townid), app_id)
+    # jfile = requests.get(url).json()
 
-# with open('weather.json', 'r', encoding='utf-8') as jfile:
-#     for datakey, datavalue in json.load(jfile).items():
-    for datakey, datavalue in requests.get(url).json().items():
+# with open('group.json', 'r', encoding='utf-8') as jfile:
+data = requests.get(url).json()
+for item in data['list']:
+    for datakey, datavalue in item.items():
         if datakey == 'weather':
             for k, v in datavalue[0].items():
                 if k == 'description':
-                    base.append(v)
+                    elements.append(v)
         if datakey == 'main' or datakey == 'wind':
             for k, v in datavalue.items():
                 if k == 'temp' or k == 'speed' or k == 'deg':
-                    base.append(v)
-        if datakey == 'dt':
-            base.append(datavalue)
+                    elements.append(v)
+        if datakey == 'dt' or datakey == 'id':
+            elements.append(datavalue)
+    base.append(tuple(elements))
+    elements = []
 print(base)
