@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
-# import json
+import json
 # import os
 import sqlite3
 import time
 import requests
 
-with open('app.id', 'r', encoding='utf-8') as file:
-    app_id = file.read().strip()
+with open('app.json', 'r', encoding='utf-8') as jfile:
+    appinf = json.load(jfile)
 
 base = []
 townid = []
 elements = []
-country = 'UA'
 with sqlite3.connect('weather.db') as con:
     cur = con.cursor()
     # cur.execute('''
-    #     create table if not exists weather (
+    #     create table if not exists metcast (
     #         id integer not null primary key autoincrement unique,
     #         wdescript text,
     #         temp real,
@@ -26,17 +25,26 @@ with sqlite3.connect('weather.db') as con:
     #         townid integer not null unique
     #     )
     # ''')
-    for row in cur.execute('select id from towns where country=\'{}\''.format(country)):
-        townid.append(*row)
+    for row in cur.execute('select id from towns where country=\'{}\''.format(appinf['country'])):
+        townid.append(str(*row))
+
+# '''
+#     openweather.org накладывает некоторые ограничения на free аккаунт:
+#     - не более 20 нас. пунктов в одном запросе
+#     - не более 60 запросов в минуту
+# '''
+
 if len(townid) % 20 != 0:
     n = len(townid) // 20 + 1
 else:
     n = len(townid) // 20
 for i in range(n):
-    print(townid[:20])
-    del townid[:20]
-# url = 'http://api.openweathermap.org/data/2.5/group?id={}&lang=ru&units=metric&appid={}'\
-#         .format(','.join(townid), app_id)
+    if i != 42:
+        url = 'http://api.openweathermap.org/data/2.5/group?id={}&lang=ru&units=metric&appid={}'\
+            .format(','.join(townid[:20]), appinf['appid'])
+        del townid[:20]
+    else:
+        time.sleep(61)
     # jfile = requests.get(url).json()
 
 # with open('group.json', 'r', encoding='utf-8') as jfile:
