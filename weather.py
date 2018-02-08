@@ -19,13 +19,15 @@ def parsejson(furl):
             if datakey == 'main':
                 for k, v in datavalue.items():
                     if k == 'temp':
-                        elements.append(v)
+                        elements.insert(1, v)
             if datakey == 'wind':
                 if 'deg' not in datavalue:
                     elements.append(0)
                 for k, v in datavalue.items():
-                    if k == 'speed' or k == 'deg':
-                        elements.append(v)
+                    if k == 'speed':
+                        elements.insert(2, v)
+                    if k == 'deg':
+                        elements.insert(3, v)
             if datakey == 'dt' or datakey == 'id':
                 elements.append(datavalue)
         base.append(tuple(elements))
