@@ -38,7 +38,6 @@ def parsejson(furl):
 def addrec(args):
     with sqlite3.connect('weather.db') as conn:
         curs = conn.cursor()
-        print(args)
         curs.executemany('insert into metcast values(NULL, ?, ?, ?, ?, ?, ?)', args)
 
 
