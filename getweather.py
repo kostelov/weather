@@ -11,6 +11,7 @@ def hlp(*args):
         python getweather.py get <Населенный_пункт> <дд.мм.гггг>
     ''')
 
+
 def weatherget(townname, udt):
     wdeg = ''
     udt = int(datetime.strptime(udt, '%d.%m.%Y').timestamp())
