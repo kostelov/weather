@@ -12,6 +12,7 @@ def hlp(*args):
     ''')
 
 def weatherget(townname, udt):
+    wdeg = ''
     udt = int(datetime.strptime(udt, '%d.%m.%Y').timestamp())
     with sqlite3.connect('weather.db') as conn:
         curs = conn.cursor()
@@ -24,7 +25,7 @@ def weatherget(townname, udt):
                 # к дате указаной пользователем прибавляем 86400 с = 24 ч = 1 сутки чтобы получить
                 # погоду в пределах суток
 
-                if 0 <= row[3] < 22.5 and 337.5 <= row[3] <= 360:
+                if 0 <= row[3] < 22.5 or 337.5 <= row[3] <= 360:
                     wdeg = 'С'
                 elif 22.5 <= row[3] < 67.5:
                     wdeg = 'С-В'
