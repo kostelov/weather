@@ -4,6 +4,7 @@ import json
 import sqlite3
 import time
 import requests
+import os
 
 
 def parsejson(furl):
@@ -36,16 +37,19 @@ def parsejson(furl):
 
 
 def addrec(args):
-    with sqlite3.connect('weather.db') as conn:
+    fullname = os.path.join(os.getcwd(), 'weather.db')
+    with sqlite3.connect(fullname) as conn:
         curs = conn.cursor()
         curs.executemany('insert into metcast values(NULL, ?, ?, ?, ?, ?, ?)', args)
 
 
 def receive():
-    with open('app.json', 'r', encoding='utf-8') as jfile:
+    fullname = os.path.join(os.getcwd(), 'app.json')
+    with open(fullname, 'r', encoding='utf-8') as jfile:
         appinf = json.load(jfile)
     townid = []
-    with sqlite3.connect('weather.db') as con:
+    fullname = os.path.join(os.getcwd(), 'weather.db')
+    with sqlite3.connect(fullname) as con:
         cur = con.cursor()
         cur.execute('''
             create table if not exists metcast (
